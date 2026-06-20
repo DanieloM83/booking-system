@@ -2,11 +2,12 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 from datetime import date
+from .models import Room
 
 
 # Create your views here.
 def index(request):
-    return HttpResponse("Hello at our hotel!")
+    return render(request, "booking/index.html", {})
 
 
 def search(request):
@@ -20,8 +21,12 @@ def search(request):
 
 
 def detail(request, room_id: int):
-    return HttpResponse(f"Ви переглядаєте кімнату {room_id}")
+    try:
+        room = Room.objects.get(pk=room_id)
+    except Room.DoesNotExist:
+        return render(request, "booking/404.html", {})
+    return render(request, "booking/detail.html", {"room": room})
 
 
 def book(request, room_id: int):
-    return
+    return HttpResponse(f"Booked {room_id}")
