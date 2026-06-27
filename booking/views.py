@@ -1,32 +1,47 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 
 from datetime import date
 from .models import Room
 
 
-# Create your views here.
+from django.db.models import Q
+
 def index(request):
-    return render(request, "booking/index.html", {})
+    return render(request, "booking/index.html")
 
 
 def search(request):
-    start_date: str = request.GET.get("start_date", date.today().strftime("%d-%m-%Y"))
-    end_date: str = request.GET.get("end_date", date.today().strftime("%d-%m-%Y"))
-    places: int = request.GET.get("places", 1)
+    rooms = Room.objects.all()
 
-    return HttpResponse(
-        f"You are trying to search for {places} Place from {start_date} to {end_date}"
+    name = request.GET.get("name")
+    places = request.GET.get("places")
+
+    if name:
+        rooms = rooms.filter(name__icontains=name)
+
+    if places:
+        rooms = rooms.filter(capacity__gte=places)
+
+    return render(
+        request,
+        "booking/search.html",
+        {
+            "rooms": rooms,
+        },
     )
 
 
-def detail(request, room_id: int):
-    try:
-        room = Room.objects.get(pk=room_id)
-    except Room.DoesNotExist:
-        return render(request, "booking/404.html", {})
-    return render(request, "booking/detail.html", {"room": room})
+def detail(request, room_id):
+    room = get_object_or_404(Room, pk=room_id)
 
+    return render(
+        request,
+        "booking/detail.html",
+        {
+            "room": room,
+        },
+    )
 
 def book(request, room_id: int):
     return HttpResponse(f"Booked {room_id}")

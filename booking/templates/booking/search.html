@@ -1,0 +1,70 @@
+{% extends "booking/base.html" %} 
+{% block title %} Search {% endblock %} 
+{% block content %}
+
+<div class="container py-5">
+  <h2 class="mb-4">Search Rooms</h2>
+
+  <form method="GET" class="row g-3">
+    <div class="col-md-4">
+      <label class="form-label"> Room name </label>
+
+      <input
+        type="text"
+        name="name"
+        value="{{ request.GET.name }}"
+        class="form-control"
+      />
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label"> Start </label>
+
+      <input
+        type="date"
+        name="start_date"
+        value="{{ request.GET.start_date }}"
+        class="form-control"
+      />
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label"> End </label>
+
+      <input
+        type="date"
+        name="end_date"
+        value="{{ request.GET.end_date }}"
+        class="form-control"
+      />
+    </div>
+
+    <div class="col-md-2">
+      <label class="form-label"> Places </label>
+
+      <input
+        type="number"
+        min="1"
+        name="places"
+        value="{{ request.GET.places|default:1 }}"
+        class="form-control"
+      />
+    </div>
+
+    <div class="col-12">
+      <button class="btn btn-primary">Search</button>
+    </div>
+  </form>
+
+  <hr class="my-5" />
+
+  <div class="row">
+    {% for room in rooms %} 
+        {% include "booking/includes/room_card.html" %} 
+        {% empty %}
+        <div class="alert alert-warning">No rooms found.</div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}
